@@ -2,37 +2,39 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "jenkins-demo-app"
-        CONTAINER_NAME = "jenkins-demo-container"
+        IMAGE_NAME = "my-app"
+        CONTAINER_NAME = "jenkins-app-container"
     }
 
-    stage('Build') {
-    steps {
-        bat 'npm install'
-    }
-}
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Installing dependencies...'
+                bat 'npm install'
+            }
+        }
 
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
         stage('Docker Build') {
             steps {
                 echo 'Building Docker image...'
-                sh "docker build -t $IMAGE_NAME ."
+                bat "docker build -t %IMAGE_NAME% ."
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying Docker container...'
-                sh """
-                    docker stop $CONTAINER_NAME || true
-                    docker rm $CONTAINER_NAME || true
-                    docker run -d --name $CONTAINER_NAME -p 3000:3000 $IMAGE_NAME
+                bat """
+                    docker stop %CONTAINER_NAME% || exit 0
+                    docker rm %CONTAINER_NAME% || exit 0
+                    docker run -d -p 3000:3000 --name %CONTAINER_NAME% %IMAGE_NAME%
                 """
             }
         }
@@ -40,7 +42,7 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline complete.'
+            echo '✅ Pipeline complete.'
         }
     }
 }
