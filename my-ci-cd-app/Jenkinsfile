@@ -2,25 +2,11 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "my-app"
-        CONTAINER_NAME = "jenkins-app-container"
+        IMAGE_NAME = 'my-static-site'
+        CONTAINER_NAME = 'jenkins-static-container'
     }
 
     stages {
-        stage('Build') {
-            steps {
-                echo 'Installing dependencies...'
-                bat 'npm install'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                bat 'npm test'
-            }
-        }
-
         stage('Docker Build') {
             steps {
                 echo 'Building Docker image...'
@@ -30,11 +16,11 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deploying Docker container...'
+                echo 'Running Docker container...'
                 bat """
                     docker stop %CONTAINER_NAME% || exit 0
                     docker rm %CONTAINER_NAME% || exit 0
-                    docker run -d -p 3000:3000 --name %CONTAINER_NAME% %IMAGE_NAME%
+                    docker run -d -p 8080:80 --name %CONTAINER_NAME% %IMAGE_NAME%
                 """
             }
         }
