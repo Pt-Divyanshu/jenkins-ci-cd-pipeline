@@ -6,13 +6,11 @@ pipeline {
         CONTAINER_NAME = "jenkins-demo-container"
     }
 
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Installing dependencies...'
-                sh 'npm install'
-            }
-        }
+    stage('Build') {
+    steps {
+        bat 'npm install'
+    }
+}
 
         stage('Test') {
             steps {
