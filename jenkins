@@ -6,10 +6,12 @@ pipeline {
         IMAGE_NAME = 'my-static-site'
         CONTAINER_NAME = 'jenkins-static-container'
     }
-stage('Check Files') {
-    steps {
-        bat 'dir'
-    }
+stages {
+        stage('Check Files') {
+            steps {
+                echo 'Checking files...'
+            }
+        }
 }
 
     stages {
