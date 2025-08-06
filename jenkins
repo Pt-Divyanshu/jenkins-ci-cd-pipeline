@@ -1,0 +1,40 @@
+
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'my-static-site'
+        CONTAINER_NAME = 'jenkins-static-container'
+    }
+stage('Check Files') {
+    steps {
+        bat 'dir'
+    }
+}
+
+    stages {
+        stage('Docker Build') {
+            steps {
+                echo 'Building Docker image...'
+                bat "docker build -t %IMAGE_NAME% ."
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Running Docker container...'
+                bat """
+                    docker stop %CONTAINER_NAME% || exit 0
+                    docker rm %CONTAINER_NAME% || exit 0
+                    docker run -d -p 8080:80 --name %CONTAINER_NAME% %IMAGE_NAME%
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            echo '✅ Pipeline complete.'
+        }
+    }
+}
